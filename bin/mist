@@ -1,0 +1,20 @@
+#!/usr/bin/env ruby
+
+require 'log4r'
+require 'thor'
+require 'mist'
+require 'mist/cli'
+
+# Create a logger right away
+logger = Log4r::Logger.new("mist::bin::mist")
+logger.info("`mist` invoked: #{ARGV.inspect}")
+
+# Stdout/stderr should not buffer output
+$stdout.sync = true
+$stderr.sync = true
+
+begin
+
+Mist::Cli.start(ARGV)
+
+end
