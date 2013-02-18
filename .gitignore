@@ -16,3 +16,6 @@ tmp
 .yardoc
 _yardoc
 doc/
+
+# don't upload API key to github
+provider.yaml

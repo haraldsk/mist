@@ -5,6 +5,7 @@ module Mist
 
     autoload :Up,       'mist/command/up'
     autoload :Destroy,  'mist/command/destroy'
+    autoload :Info,     'mist/command/info'
 
   end
 end
