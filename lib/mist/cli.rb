@@ -3,7 +3,7 @@ require 'log4r'
 require 'mist/command'
 
 module Mist
-  class Cli < Thor
+  class Cli < Mist::Command::Base
 
       desc "up", "create and start servers"
       subcommand "up", Command::Up
