@@ -8,10 +8,7 @@ module Mist
       desc "create", "create and start all servers"
       def create
         puts "Creating and starting all servers."
-
-
         interface = Mist::Interface.new()
-
         interface.create()
 
       end

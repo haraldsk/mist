@@ -10,105 +10,82 @@ module Mist
         @compute = Fog::Compute.new( @providers['compute'] )
       end
 
+      def flavor_by_id(id)
+        return @compute.flavors.get(id)
+      end
       def flavors
-        rows = []
-        @compute.flavors.all.each do |flavor|
-          rows << [ flavor.id, flavor.name ]
-        end
+        return @compute.flavors.all
+      end
 
-        table = Terminal::Table.new ({
-          :title    => "Instance flavors",
-          :headings => ['Id', 'Name'],
-          :rows     => rows
-        })
-        puts table
-
+      def image_by_id(id)
+        return @compute.images.get(id)
       end
 
       def images
-        rows = []
-        @compute.images.all.each do |image|
-          rows << [ image.id, image.name ]
+        return @compute.images.all
+      end
+
+      # for debug
+      def get_servers
+        s = []
+        @compute.servers.all.each do |server|
+          if [ 'rack10', 'rack11' ].include? server.name
+            s << server
+          end
 
         end
 
-        table = Terminal::Table.new ({
-          :title    => "Server images",
-          :headings => ['Id', 'Name'],
-          :rows     => rows
-        })
-        puts table
+          return s
       end
 
       def servers
-        rows = []
-        @compute.servers.all.each do |server|
-          netname, addr, privaddr = nil
-          server.addresses.each_pair do |k,v|
-            next if k == 'public'
-            if k == 'private'
-              privaddr = v[0]['addr']
-              next
-            end
-            netname = k
-            addr = v[0]['addr']
-          end
-          flavor = @compute.flavors.get(server.flavor_id)
-          image = @compute.images.get(server.image_id)
-          rows << [ server.name, server.ipv4_address, privaddr, "#{netname}: #{addr} ", "#{server.progress}%", server.disk_config , flavor.name, image.name, server.id ]
-
-        end
-
-        table = Terminal::Table.new ({
-          :title    => "Running servers",
-          :headings => ['Name', 'External IPv4', 'Internal IPv4', 'Custom Net: IPv4', 'Progess', 'Disk Config', 'Flavour', 'Image', 'UUID'],
-          :rows     => rows
-        })
-        puts table
+        return @compute.servers.all
       end
 
       def networks
-        rows = []
-        @compute.networks.all.each do |network|
-          rows << [ network.label, network.cidr, network.id ]
+        return @compute.networks.all
+      end
 
+      def network_by_label(label)
+        @compute.networks.all.each do |net|
+          if net.label == label
+            return net
+          end
         end
-
-        table = Terminal::Table.new ({
-          :title    => "Networks",
-          :headings => [ 'Label', 'CIDR', 'Id' ],
-          :rows     => rows
-        })
-        puts table
       end
 
       def create(params = {})
         params = {
+          :personality  => [],
           :networks     => [],
           :metadata     => {},
           :disk_config => 'AUTO',
         }.merge(params)
 
-        # puts params[:networks]
+        server = nil
 
-        server = @compute.servers.create(
-          :name        => params[:name],
-          :flavor_id   => params[:flavor],
-          :image_id    => params[:image],
-          :disk_config => params[:disk_config],
-          :networks    => params[:networks],
-          # :metadata    => params[:metadata]
-        )
+        unless ENV['MOCK']
+          server = @compute.servers.create(
+            :name        => params[:name],
+            :flavor_id   => params[:flavor],
+            :image_id    => params[:image],
+            :disk_config => params[:disk_config],
+            :networks    => params[:networks],
+            :personality => params[:personality]
+            # :metadata    => params[:metadata]
+          )
+        else
+          server = @compute.servers.create(
+            :name => params[:name],
+            :flavor_id => compute.flavors.first.id,
+            :image_id => compute.images.first.id
+          )
+        end
 
         if params[:block]
-          # server.wait_for { ready? }
-          while (  server.progress != 100 )
-            puts "#{params[:name]} #{server.progress}"
-            sleep 20
-            server.reload
-          end
-          return server.ipv4_address
+          server.wait_for { ready? }
         end
+        return server
       end
 
       def destroy_by_name(name)
@@ -118,8 +95,8 @@ module Mist
 
       end
 
-      def destroy_by_uuid(uuid)
-        @compute.servers.get(uuid).destroy
+      def destroy_by_id(uuid)
+        @compute.servers.get(id).destroy
       end
 
       def reboot_by_name(name, hard=true)
@@ -133,11 +110,11 @@ module Mist
       end
 
 
-      def reboot_by_uuid(uuid, hard=true)
+      def reboot_by_id(uuid, hard=true)
         if hard
-          @compute.servers.get(uuid).reboot HARD
+          @compute.servers.get(id).reboot HARD
         else
-          @compute.servers.get(uuid).reboot
+          @compute.servers.get(id).reboot
         end
       end
 

@@ -23,22 +23,26 @@ module Mist
         # zone.records.all.each { |r| puts r.attributes[:name] }
       end
       def create_record(name, domain, type, value)
-
+        # puts "DNS:#{name} #{domain} #{type} #{value}"
         @dns.zones.all.each do |zone|
-          if domain == zone.domain
+          if domain =~ /#{zone.domain}$/
+
             r = zone.records.create(
               :value   => value,
               :name => "#{name}.#{domain}",
               :type => type,
             )
-            puts "Created ZoneId: #{zone.id}, RecordId: #{r.id} #{r.name} #{r.type} #{r.value}"
+            # puts "Created ZoneId: #{zone.id}, RecordId: #{r.id} #{r.name} #{r.type} #{r.value}"
+            return zone.id, r.id
           end
         end
+        puts "Domain not matching: #{name} #{domain} #{type} #{value}"
+        return nil, nil
       end
 
-      def destroy_record(name, domain)
+      def destroy_record_by_name(name, domain)
         @dns.zones.all.each do |zone|
-          if domain == zone.domain
+          if domain =~ /#{zone.domain}$/
             zone.records.all.each do |r|
               if "#{name}.#{domain}" == r.name
                 puts "Purging #{r.id} #{r.name} #{r.type} #{r.value}"

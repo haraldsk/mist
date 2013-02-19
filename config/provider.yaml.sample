@@ -1,0 +1,15 @@
+---
+  dns:
+    :provider:                Rackspace
+    :rackspace_username:      <user>
+    :rackspace_api_key:       <key>
+    :rackspace_auth_url:      lon.auth.api.rackspacecloud.com
+    :rackspace_dns_endpoint:  https://lon.dns.api.rackspacecloud.com/v1.0
+  compute:
+    :provider:                Rackspace
+    :version:                 :v2
+    :rackspace_username:      <user>
+    :rackspace_api_key:       <key>
+    :rackspace_auth_url:      lon.auth.api.rackspacecloud.com
+    :rackspace_endpoint:      https://lon.servers.api.rackspacecloud.com/v2
+

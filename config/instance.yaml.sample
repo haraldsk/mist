@@ -1,0 +1,25 @@
+---
+  rack01:
+    image:        'Fedora 16 (Verne)'
+    flavor:       '2GB Standard Instance'
+    disk_config:  'MANUAL'
+    nets:
+      public:   public.my.domain.com
+      private : private.my.domain.com
+      Bitnet:   bitnet.my.domain.com
+    provisioners:
+      localscript:  linstall.sh
+      remotescript: rinstall.sh
+      puppetmaster: puppet.my.domain.com
+  rack02:
+    image:        'Ubuntu 12.10 (Quantal Quetzal)'
+    flavor:       '2GB Standard Instance'
+    disk_config:  'MANUAL'
+    nets:
+      public:   public.my.domain.com
+      private:  private.my.domain.com
+      Bitnet:   bitnet.my.domain.com
+    provisioners:
+      localscript:  linstall.sh
+      remotescript: rinstall.sh
+      puppetmaster: puppet.my.domain.com
