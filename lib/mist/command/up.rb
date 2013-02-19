@@ -1,17 +1,14 @@
 require 'thor'
-# require 'mist/provisioner/dns'
 require 'mist/interface'
 
 module Mist
   module Command
     class Up < Base
-      default_task(:up)
-      desc "up", "create and start all servers"
-      def up
+      default_task(:create)
+      desc "create", "create and start all servers"
+      def create
         puts "Creating and starting all servers."
 
-         #provisioner = Mist::Provisioner::Dns.new()
-         #provisioner.show_records()
 
         interface = Mist::Interface.new()
 

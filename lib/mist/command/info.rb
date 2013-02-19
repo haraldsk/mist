@@ -18,6 +18,10 @@ module Mist
       def flavors
         Mist::Interface.new.flavors
       end
+      desc "networks", "show information on networks"
+      def networks
+        Mist::Interface.new.networks
+      end
     end
   end
 end
